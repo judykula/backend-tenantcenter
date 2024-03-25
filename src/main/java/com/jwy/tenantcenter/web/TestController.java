@@ -12,25 +12,19 @@
 package com.jwy.tenantcenter.web;
 
 import com.jwy.medusa.mvc.MyResponse;
-import com.jwy.tenantcenter.convertor.Sample1Convertor;
-import com.jwy.tenantcenter.pojo.bo.SampleBo;
-import com.jwy.tenantcenter.pojo.dto.SampleDto;
-import com.jwy.tenantcenter.pojo.response.SampleVo;
-import com.jwy.tenantcenter.service.SampleService1;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import com.jwy.tenantcenter.convertor.SiteConvertor;
+import com.jwy.tenantcenter.pojo.bo.SiteBo;
+import com.jwy.tenantcenter.pojo.dto.SiteDto;
+import com.jwy.tenantcenter.pojo.dto.TenantDto;
+import com.jwy.tenantcenter.service.SiteService;
+import com.jwy.tenantcenter.service.TenantService;
+import com.jwy.wisp.pojo.response.saas.TenantHostVo;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,40 +42,60 @@ import java.util.List;
 public class TestController {
 
     @Autowired
-    private SampleService1 sampleService1;
+    private SiteService siteService;
+    @Autowired
+    private TenantService tenantService;
 
     @GetMapping("/t1")
     public MyResponse t1() {
 
-        for (int i = 0; i < 10; i++) {
-            SampleDto sampleDto = new SampleDto();
-            sampleDto.setAge(RandomUtils.nextInt(0, 100));
-            sampleDto.setFirstName(RandomStringUtils.randomAlphanumeric(10));
-            sampleDto.setBirthday(new Date());
-            this.sampleService1.add(sampleDto);
-        }
+        TenantDto tenantDto = new TenantDto();
+        tenantDto.setTenantKey("jwy");
+        tenantDto.setTenantDesc("this is default tenant");
+        tenantDto.setCreatorId(123456l);
+        tenantDto.setCreatorName("jiangwy");
+        tenantDto.setState(1);
+
+        long tenantId = this.tenantService.addTenant(tenantDto);
+
+        SiteDto siteDto = new SiteDto();
+        siteDto.setSiteKey("defaultSite1");
+        siteDto.setDomainBase("localhost");
+        siteDto.setTenantKey("jwy");
+        siteDto.setTenantId(tenantId);
+        siteDto.setState(1);
+
+        this.siteService.addSite(siteDto);
 
         return MyResponse.ofSuccess();
     }
 
-    @Operation(
-            summary = "查询所有数据",
-            description = "这是一个测试接口，用于查询所有测试生成的数据",
-            parameters = {
-                    @Parameter(name = "id", description = "这是一个测试参数", required = false, example = "1")
-            },
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "响应成功"),
-                    @ApiResponse(responseCode = "500", description = "响应失败",
-                            content = @Content(schema = @Schema(implementation = MyResponse.class))
-                    )
-            }
-    )
     @GetMapping("/t2")
-    public MyResponse<List<SampleVo>> t2() {
-        List<SampleBo> all = this.sampleService1.getAll();
-        List<SampleVo> sampleResponses = Sample1Convertor.toSampleResponses(all);
-        return MyResponse.ofSuccess(sampleResponses);
+    public MyResponse t2(String siteKey, String host) {
+
+        SiteDto siteDto = new SiteDto();
+        siteDto.setSiteKey(siteKey);
+        siteDto.setDomainBase(host);
+        siteDto.setTenantKey("jwy");
+        siteDto.setTenantId(969699323652739072l);
+        siteDto.setState(1);
+
+        this.siteService.addSite(siteDto);
+
+        return MyResponse.ofSuccess();
+    }
+
+    @GetMapping("/t3")
+    public MyResponse<Long> t3() {
+        long latestTime = this.siteService.getLatestTime();
+        return MyResponse.ofSuccess(latestTime);
+    }
+
+    @GetMapping("/t4")
+    public MyResponse<List<TenantHostVo>> t4() {
+        List<SiteBo> allAvailableSites = this.siteService.getAllAvailableSites();
+        List<TenantHostVo> tenantHostVos = SiteConvertor.toTenantHostVoList(allAvailableSites);
+        return MyResponse.ofSuccess(tenantHostVos);
     }
 
 }

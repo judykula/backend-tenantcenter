@@ -33,10 +33,7 @@ import com.jwy.medusa.mvc.MyStatusz;
  */
 public class StatusUtils extends MyStatusz {
 
-    /**
-     * 样例
-     */
-    public static MyStatus xxxError =  MyStatus.of(10010, "xxxError");
+    public static MyStatus TenantError =  MyStatus.of(20010, "TenantError");
 
 
 }

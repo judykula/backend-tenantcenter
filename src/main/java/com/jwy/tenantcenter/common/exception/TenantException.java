@@ -13,27 +13,28 @@ package com.jwy.tenantcenter.common.exception;
 
 import com.jwy.medusa.common.exception.MyServiceException;
 import com.jwy.medusa.mvc.MyStatus;
+import com.jwy.tenantcenter.common.util.StatusUtils;
 
 /**
  * <p>
- *     tenantcenter业务的exception
+ *     tenant exception
  * </p>
  *
- * @author archetype
+ * @author Jiang Wanyu
  * @version 1.0
- * @date ${DATE}
+ * @date 2024/3/22
  */
-public class SampleException extends MyServiceException {
+public class TenantException extends MyServiceException {
 
-    public SampleException() {
-        super(MyStatus.of(10000, "SampleException"));//TODO 这块要改成使用 公共jar内定义的 statusz
+    public TenantException() {
+        super(StatusUtils.TenantError);
     }
 
-    public SampleException(MyStatus status) {
+    public TenantException(MyStatus status) {
         super(status);
     }
 
-    public SampleException(MyStatus status, Throwable cause) {
+    public TenantException(MyStatus status, Throwable cause) {
         super(status, cause);
     }
 }
