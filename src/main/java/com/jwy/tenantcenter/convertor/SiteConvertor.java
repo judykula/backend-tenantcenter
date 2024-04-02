@@ -66,7 +66,7 @@ public class SiteConvertor {
     }
 
     public static TenantHostVo toTenantHostVo(SiteBo sitebo) {
-        return new TenantHostVo(sitebo.getDomainBase(), sitebo.getTenantKey());
+        return new TenantHostVo(sitebo.getTenantKey(), sitebo.getDomainBase());
     }
 
     public static List<TenantHostVo> toTenantHostVoList(List<SiteBo> siteboList) {
